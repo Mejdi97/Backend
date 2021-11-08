@@ -1,0 +1,18 @@
+const mongoose = require('mongoose')
+
+const CustomerSchema = new mongoose.Schema({
+
+  wallet_address: {
+    type: String,
+    required: true
+  },
+  name: {
+    type: String,
+  },
+  bio: {
+    type: String
+    
+  }
+})
+
+module.exports = mongoose.model('Customer', CustomerSchema)
