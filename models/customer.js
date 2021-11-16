@@ -10,9 +10,15 @@ const CustomerSchema = new mongoose.Schema({
     type: String,
   },
   bio: {
-    type: String
-    
+    type: String 
+  },
+  protfolio: {
+    type:String
+  },
+  social_media_accounts :{
+    type:String
   }
+
 })
 
 module.exports = mongoose.model('Customer', CustomerSchema)

@@ -46,7 +46,11 @@ router.get('/:id', (req, res) => {
 router.post('/', async (req, res) => {
   const customer = new Customer({
     wallet_address: req.body.wallet_address,
-    name: req.body.name
+    name: req.body.name,
+    bio: req.body.bio,
+    protfolio: req.body.protfolio,
+    social_media_accounts : req.body.social_media_accounts
+
   })
   try {
     const newCustomer = await customer.save();
@@ -79,7 +83,11 @@ router.patch('/:id',async(req,res)=>{
 const updatedCustomer = await Customer.updateOne(
   {_id:req.params.id}, 
   { $set: {wallet_address:req.body.wallet_address,
- name:req.body.name}}
+ name:req.body.name,
+ protfolio:req.body.protfolio,
+ social_media_accounts :req.body.social_media_accounts
+
+}}
 );
 res.json(updatedCustomer);
   }catch (err){
@@ -102,10 +110,5 @@ router.delete('/:id', getCustomer ,async (req, res) => {
     res.status(500).json({ message: err.message})
   }
 })
-
-
-
-
-
 
 module.exports = router

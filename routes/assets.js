@@ -46,6 +46,7 @@ router.get('/:id', (req, res) => {
  
  
  //DELLITING ONE
+ 
  router.delete('/:id', getAsset ,async (req, res) => {
     try {
       await res.Asset.deleteOne()
@@ -56,7 +57,7 @@ router.get('/:id', (req, res) => {
   })
 
 
- //GETASSET
+ //GET ASSET BY ID 
 async function getAsset(req, res, next) {
   let assett
   try {
