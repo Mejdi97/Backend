@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const Customer = require('../models/Customer')
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt');
 
 
 
@@ -15,6 +16,9 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: err.message })
   }
 })
+
+
+
 
 async function getCustomer(req, res, next) {
   let customerr
@@ -31,6 +35,8 @@ async function getCustomer(req, res, next) {
   next()
 }
 
+
+
 // Getting One
 router.get('/:id', (req, res) => {
    Customer.findById(mongoose.Types.ObjectId(req.params.id)
@@ -44,15 +50,24 @@ router.get('/:id', (req, res) => {
 
 // Creating one
 router.post('/', async (req, res) => {
+
+  console.log(req.file)
+  try {
+    
+    const hashedPAssword = await bcrypt.hash(req.body.password, 10)  
+  
+  
   const customer = new Customer({
+
     wallet_address: req.body.wallet_address,
     name: req.body.name,
+    password:hashedPAssword,
     bio: req.body.bio,
     protfolio: req.body.protfolio,
     social_media_accounts : req.body.social_media_accounts
 
   })
-  try {
+  
     const newCustomer = await customer.save();
     res.status(201).json(newCustomer)
   } catch (err) {
@@ -83,6 +98,7 @@ router.patch('/:id',async(req,res)=>{
 const updatedCustomer = await Customer.updateOne(
   {_id:req.params.id}, 
   { $set: {wallet_address:req.body.wallet_address,
+    password: req.body.password,
  name:req.body.name,
  protfolio:req.body.protfolio,
  social_media_accounts :req.body.social_media_accounts
@@ -96,10 +112,6 @@ res.json(updatedCustomer);
 });
 
 
-
-
-
-
 // Deleting One
 
 router.delete('/:id', getCustomer ,async (req, res) => {
@@ -110,5 +122,27 @@ router.delete('/:id', getCustomer ,async (req, res) => {
     res.status(500).json({ message: err.message})
   }
 })
+
+//LOGIN 
+router.post('/login', async (req, res) => {
+  const customers = await Customer.find()
+  customers.find(Customer => Customer.name === req.body.name)
+  if (Customer == null) {
+    return res.status(400).send('Cannot find Customer')
+  }
+  try {
+    if(await bcrypt.compare(req.body.password, Customer.password)) {
+    res.json({ message: 'Success' })
+
+    } else {
+      res.json({ message: 'Not Allowed' })
+    }
+  } catch {
+    res.status(500).send()
+  }
+})
+
+
+
 
 module.exports = router

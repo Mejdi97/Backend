@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const payment = require('./payment')
+const Payment = require('./payment')
 const mongoose = require('mongoose')
 
 
@@ -24,6 +24,15 @@ router.post('/', async (req, res) => {
 
 
 
+// Getting all
+router.get('/', async (req, res) => {
+    try {
+      const payments = await Payment.find()
+      res.json(payments)
+    } catch (err) {
+      res.status(500).json({ message: err.message })
+    }
+  })
 
 
 
