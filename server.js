@@ -23,8 +23,16 @@ app.use('/assets',assetsRoutes)
 const orderRoutes=require('./routes/order')
 app.use('/order',orderRoutes)
 
-const paymentsRoutes=require('./routes/payment')
-app.use('/payment',paymentsRoutes)
+const favoriteRoutes=require('./routes/favorites')
+app.use('/favorite',favoriteRoutes)
+
+const likeRoutes=require('./routes/likes')
+app.use('/like',likeRoutes)
+
+const bidsRoutes=require('./routes/bids')
+app.use('/bids',bidsRoutes)
+
+
 
 
 app.listen(3001, () => console.log('Server Started'))

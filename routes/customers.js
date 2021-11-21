@@ -15,7 +15,7 @@ router.get('/:id',customerController.getOneCustomer);
 // Creating one
 router.post('/',auth,customerController.createCustomer );
 
-//UPDATE2
+//UPDATE
 router.patch('/:id',auth,customerController.updateCustomer);
 
 // Deleting One
