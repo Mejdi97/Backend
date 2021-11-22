@@ -6,20 +6,24 @@ const CustomerSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  password : {
-    type:String,
+  password: {
+    type: String,
   },
   name: {
     type: String,
   },
   bio: {
-    type: String 
+    type: String
   },
   protfolio: {
-    type:String
+    type: String
   },
-  social_media_accounts :{
-    type:String
+  social_media_accounts: {
+    type: String
+  },
+
+  profile_picture: {
+    type: String
   }
 
 })

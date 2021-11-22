@@ -3,10 +3,11 @@ const router = express.Router()
 const Asset = require('../models/asset')
 const mongoose = require('mongoose')
 const assetController = require('../controllers/asset');
-
+const multer = require ('../middleware/multer-config');
+const auth = require ('../middleware/auth');
 
 //Creating one
-router.post('/',assetController.createAsset );
+router.post('/',auth,multer,assetController.createAsset );
 
 //GETTING ALL
 router.get('/',assetController.getAllAssets);
@@ -17,6 +18,11 @@ router.get('/:id',assetController.getAsset);
 router.patch('/:id',assetController.updateAsset);
  
  //DELLITING ONE
- router.delete('/:id', assetController.deleteAsset);
+ router.delete('/:id', auth,assetController.deleteAsset);
 
 module.exports = router
+
+
+
+
+
