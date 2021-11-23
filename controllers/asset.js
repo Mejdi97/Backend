@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
 const express = require('express');
 const Asset = require('../models/asset');
+const fs = require('fs');
+const asset = require('../models/asset');
 
 
 
@@ -72,9 +74,11 @@ exports.updateAsset = async (req, res) => {
 
 
 //delete Asset
-exports.deleteAsset = async (req, res) => {
-  Asset.deleteOne({ _id: req.params.id }).then(
+/* exports.deleteAsset = async (req, res) => {
+  const filename = asset.asset.picture;   
+    Asset.deleteOne({ _id: req.params.id }).then(
     () => {
+      fs.unlink(`images/${filename}`),  
       res.status(200).json({
         message: 'Deleted!'
       });
@@ -84,8 +88,21 @@ exports.deleteAsset = async (req, res) => {
       res.status(400).json({ error: error });
     }
   );
-}
+} */
 
 
+exports.deleteAsset = (req, res, next) => {
+  Asset.findOne({ _id: req.params.id })
+    .then(asset => {
+      const filename = asset.asset_picture;
+      fs.unlink(`${filename}`, () => {
+        Asset.deleteOne({ _id: req.params.id })
+          .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
+          .catch(error => res.status(400).json({ error }));
+      });
+    })
+    .catch(error => res.status(500).json({ error }));
+    
 
+}; 
 

@@ -13,16 +13,16 @@ router.get('/', customerController.getAllCustomer);
 router.get('/:id', customerController.getOneCustomer);
 
 // Creating one
-router.post('/', auth, customerController.createCustomer);
+router.post('/', customerController.createCustomer);
 
 //UPDATE
-router.patch('/:id', auth, customerController.updateCustomer);
+router.patch('/:id',auth, customerController.updateCustomer);
 
 // Deleting One
 router.delete('/:id', auth, customerController.deleteCustomer);
 
 //login 
-router.post('/login', auth, customerController.login);
+router.post('/login',customerController.login);
 
 //upload picture 
 

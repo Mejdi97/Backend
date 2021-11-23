@@ -43,9 +43,9 @@ exports.createCustomer = async (req, res) => {
       bio: req.body.bio,
       protfolio: req.body.protfolio,
       social_media_accounts : req.body.social_media_accounts
+      
   
-    })
-    
+    })    
       const newCustomer = await customer.save();
       res.status(201).json(newCustomer)
     } catch (err) {

@@ -7,7 +7,7 @@ const multer = require ('../middleware/multer-config');
 const auth = require ('../middleware/auth');
 
 //Creating one
-router.post('/',auth,multer,assetController.createAsset );
+router.post('/',multer,assetController.createAsset );
 
 //GETTING ALL
 router.get('/',assetController.getAllAssets);
@@ -15,10 +15,10 @@ router.get('/',assetController.getAllAssets);
 //GETTING ONE 
 router.get('/:id',assetController.getAsset);
 //UPDATE
-router.patch('/:id',assetController.updateAsset);
+router.patch('/:id',auth,assetController.updateAsset);
  
  //DELLITING ONE
- router.delete('/:id', auth,assetController.deleteAsset);
+ router.delete('/:id',assetController.deleteAsset);
 
 module.exports = router
 
