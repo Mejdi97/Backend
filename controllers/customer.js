@@ -38,8 +38,8 @@ exports.createCustomer = async (req, res) => {
       const hashedPAssword = await bcrypt.hash(req.body.password, 10)  
       const customer = new Customer({
       wallet_address: req.body.wallet_address,
-      diplay_name: req.body.name,
-      url: req.body.protfolio,
+      diplay_name: req.body.diplay_name,
+      url: req.body.url,
       bio: req.body.bio,
       email:req.body.email,
       password:hashedPAssword,
@@ -62,12 +62,14 @@ exports.createCustomer = async (req, res) => {
     try{
   const updatedCustomer = await Customer.updateOne(
     {_id:req.params.id}, 
-    { $set: {wallet_address:req.body.wallet_address,
-      password: req.body.password,
-   name:req.body.name,
-   protfolio:req.body.protfolio,
-   social_media_accounts :req.body.social_media_accounts
-  
+    { $set: {
+      wallet_address: req.body.wallet_address,
+      diplay_name: req.body.diplay_name,
+      url: req.body.url,
+      bio: req.body.bio,
+      email:req.body.email,
+      password:hashedPAssword,
+      social_media_accounts:req.body.social_media_accounts
   }}
   );
   res.json(updatedCustomer);
