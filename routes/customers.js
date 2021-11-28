@@ -10,7 +10,7 @@ const auth = require('../middleware/auth');
 router.get('/', customerController.getAllCustomer);
 
 // Getting One
-router.get('/:id', customerController.getOneCustomer);
+router.get('/:id', auth,customerController.getOneCustomer);
 
 // Creating one
 router.post('/', customerController.createCustomer);

@@ -38,11 +38,12 @@ exports.createCustomer = async (req, res) => {
       const hashedPAssword = await bcrypt.hash(req.body.password, 10)  
       const customer = new Customer({
       wallet_address: req.body.wallet_address,
-      name: req.body.name,
-      password:hashedPAssword,
+      diplay_name: req.body.name,
+      url: req.body.protfolio,
       bio: req.body.bio,
-      protfolio: req.body.protfolio,
-      social_media_accounts : req.body.social_media_accounts
+      email:req.body.email,
+      password:hashedPAssword,
+      social_media_accounts:req.body.social_media_accounts
       
   
     })    
@@ -94,7 +95,7 @@ exports.createCustomer = async (req, res) => {
 //login
 
   exports.login = (req, res, next) => {
-    Customer.findOne({ wallet_address: req.body.wallet_address })
+    Customer.findOne({ email: req.body.email }) 
   .then(Customer => {
     if (!Customer) {
       return res.status(401).json({ error: 'Customer not found  !' });
