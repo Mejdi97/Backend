@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const asset = require('./asset')
 
 const CustomerSchema = new mongoose.Schema({
 
@@ -16,11 +17,11 @@ const CustomerSchema = new mongoose.Schema({
     type: String
   },
   protfolio: {
-    type: String
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'asset'
   },
-  social_media_accounts: {
-    type: String
-  },
+
+  social_media_accounts: [String],
 
   profile_picture: {
     type: String

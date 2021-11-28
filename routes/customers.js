@@ -6,7 +6,7 @@ const mongoose = require('mongoose')
 const auth = require('../middleware/auth');
 
 
-// Getting all
+// getting all
 router.get('/', customerController.getAllCustomer);
 
 // Getting One
@@ -24,7 +24,7 @@ router.delete('/:id', auth, customerController.deleteCustomer);
 //login 
 router.post('/login',customerController.login);
 
-//upload picture 
+
 
 
 
