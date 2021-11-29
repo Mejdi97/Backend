@@ -7,25 +7,6 @@ const asset = require('../models/asset');
 
 
 
-//creating one
-exports.createAsset = async (req, res) => {
-  const asset = new Asset({
-    owner: req.body.wallet_address,
-    name_asset: req.body.name_asset,
-    description: req.body.description,
-    bids: req.body.bids,
-    instant_sale: req.body.instant_sale,
-    price: req.body.price,
-    asset_picture : req.file.path
-
-  });
-  asset.save()
-    .then(() => res.status(201).json(asset))
-    .catch(error => res.status(400).json({ error }));
-
-
-};
-
 
 //liste All assets
 exports.getAllAssets = async (req, res) => {
@@ -36,6 +17,28 @@ exports.getAllAssets = async (req, res) => {
     res.status(500).json({ message: err.message })
   }
 }
+
+
+//creating one
+exports.createAsset = async (req, res) => {
+  const asset = new Asset({
+    owner: req.body.wallet_address,
+    name_asset: req.body.name_asset,
+    description: req.body.description,
+    bids: req.body.bids,
+    instant_sale: req.body.instant_sale,
+    price: req.body.price,
+    asset_picture: req.file.path
+
+  });
+  asset.save()
+    .then(() => res.status(201).json(asset))
+    .catch(error => res.status(400).json({ error }));
+
+
+};
+
+
 
 
 
@@ -97,12 +100,12 @@ exports.deleteAsset = (req, res, next) => {
       const filename = asset.asset_picture;
       fs.unlink(`${filename}`, () => {
         Asset.deleteOne({ _id: req.params.id })
-          .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
+          .then(() => res.status(200).json({ message: 'Objet supprimé !' }))
           .catch(error => res.status(400).json({ error }));
       });
     })
     .catch(error => res.status(500).json({ error }));
-    
 
-}; 
+
+};
 
