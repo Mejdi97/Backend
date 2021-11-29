@@ -56,29 +56,12 @@ exports.createCustomer = async (req, res) => {
 }
 
 
-
-
 //update customer
 exports.updateCustomer = async (req, res) => {
-  try {
-    const updatedCustomer = await Customer.updateOne(
-      { _id: req.params.id },
-      {
-        $set: {
-          wallet_address: req.body.wallet_address,
-          name: req.body.name,
-          url: req.body.url,
-          bio: req.body.bio,
-          email: req.body.email,
-          password: req.body.hashedPAssword,
-          social_media_accounts: req.body.social_media_accounts
-        }
-      }
-    );
-    res.json(updatedCustomer);
-  } catch (err) {
-    res.status(400).json({ message: err.message })
-  }
+  Customer.updateOne({ _id: req.params.id }, 
+    { ...req.body, _id: req.params.id })
+  .then(() => res.status(200).json({ message: 'Objet modifié !'}))
+  .catch(error => res.status(400).json({ error }));
 }
 
 //delete customer
@@ -126,28 +109,53 @@ exports.login = (req, res, next) => {
 }
 
 //forgot password
-exports.forgotPassword = async(req,res,next)=>{
+exports.forgotPassword = async (req, res, next) => {
 
   Customer.findOne({ email: req.body.email })
-  .then (Customer => {
-    if (Customer) {
-      const token = jwt.sign({id:Customer._id},process.env.JWT_ACTIVATE_TOKEN,{expiresIn:'20m'})
-      const link = `${process.env.URL}/password-reset/${Customer._id}/${token}`;
-        sendEmail(Customer.email, "Activation Email",  `<a href="link"> use this link to reset your password</a>`+link);
-      return res.status(200).json({ message: 'An email have been sent !' });
+    .then(Customer => {
+      if (Customer) {
+        const token = jwt.sign({ id: Customer._id }, process.env.JWT_ACTIVATE_TOKEN, { expiresIn: '20m' })
+        const link = `${process.env.URL}/password-reset/${Customer._id}/${token}`;
+        if (!token) {
+          token = new token({
+              CustomerId: Customer._id,
+              resetLink: token,
+          }).save();
+      }
+        sendEmail(Customer.email, "Activation Email", `<a href="link"> use this link to reset your password</a>` + link);
+        return res.status(200).json({ message: 'An email have been sent !' });
 
-    }else{
-      return res.status(401).json({ error: 'Customer not found !' });
+      } else {
+        return res.status(401).json({ error: 'Customer not found !' });
 
-    }
+      }
 
-  })
-  
+    })
+
 }
 
 
 
 //reset password
-exports.resetPassword = async (req,res) => {
-  
+exports.resetPassword = async (req, res) => {
+
+
+  try {
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    const CustomerId = decodedToken.CustomerId;
+    if (req.body.CustomerId && req.body.CustomerId !== CustomerId)
+     updatedCustomer = Customer.updateOne(
+      { _id: req.params.id },
+      {
+        $set: {
+          password: req.body.hashedPAssword,
+        }
+      }
+    );
+    res.json(updatedCustomer);
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+
 }
+

@@ -10,13 +10,13 @@ const auth = require('../middleware/auth');
 router.get('/', customerController.getAllCustomer);
 
 // Getting One
-router.get('/:id', auth,customerController.getOneCustomer);
+router.get('/:id',customerController.getOneCustomer);
 
 // Creating one
 router.post('/', customerController.createCustomer);
 
 //UPDATE
-router.patch('/:id',auth, customerController.updateCustomer);
+router.put('/:id', customerController.updateCustomer);
 
 // Deleting One
 router.delete('/:id', auth, customerController.deleteCustomer);
@@ -28,7 +28,7 @@ router.post('/login',customerController.login);
 router.post('/forgot-password',customerController.forgotPassword);
 
 //reset password
-router.patch('/password-reset/:id',auth,customerController.resetPassword);
+router.patch('/password-reset/:id',customerController.resetPassword);
 
 
 
