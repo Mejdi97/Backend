@@ -6,7 +6,7 @@ module.exports = (req, res, next) => {
     const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
     const CustomerId = decodedToken.CustomerId;
     if (req.body.CustomerId && req.body.CustomerId !== CustomerId) {
-      throw 'Invalid user ID';
+      throw 'Invalid customer ID';
     } else {
       next();
     }
