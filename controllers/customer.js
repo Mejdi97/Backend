@@ -38,7 +38,7 @@ exports.createCustomer = async (req, res) => {
       const hashedPAssword = await bcrypt.hash(req.body.password, 10)  
       const customer = new Customer({
       wallet_address: req.body.wallet_address,
-      diplay_name: req.body.diplay_name,
+      name: req.body.name,
       url: req.body.url,
       bio: req.body.bio,
       email:req.body.email,
@@ -64,7 +64,7 @@ exports.createCustomer = async (req, res) => {
     {_id:req.params.id}, 
     { $set: {
       wallet_address: req.body.wallet_address,
-      diplay_name: req.body.diplay_name,
+      name: req.body.name,
       url: req.body.url,
       bio: req.body.bio,
       email:req.body.email,

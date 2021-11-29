@@ -6,8 +6,9 @@ const CustomerSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  display_name: {
+  name: {
     type: String,
+    required : true
   },
   url: {
     type: String,
