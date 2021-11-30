@@ -112,7 +112,7 @@ exports.login = (req, res, next) => {
 
 
 
-
+//forgot password
 exports.forgotPassword = async (req, res, next) => {
   Customer.findOne({ email: req.body.email })
     .then(Customer => {
