@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../middleware/send-mail');
-const Joi = require("joi");
 
 
 
@@ -32,7 +31,7 @@ exports.getOneCustomer = (req, res) => {
 
 
 
-//create custumor
+//create custumorr
 exports.createCustomer = async (req, res) => {
 
   console.log(req.file)
@@ -113,7 +112,7 @@ exports.login = (req, res, next) => {
 
 
 //forgot password
-
+/* 
 exports.forgotPassword = async (req, res, next) => {
   Customer.findOne({ email: req.body.email })
     .then(Customer => {
@@ -136,7 +135,7 @@ exports.forgotPassword = async (req, res, next) => {
 
     })
 
-}
+} */
 
 //reset password
 /* exports.resetPassword = async (req, res) => {

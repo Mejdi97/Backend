@@ -25,7 +25,7 @@ router.delete('/:id', auth, customerController.deleteCustomer);
 router.post('/login',customerController.login);
 
 //forgot password 
-router.post('/forgot-password',customerController.forgotPassword);
+//router.post('/forgot-password',customerController.forgotPassword);
 
 //reset password
 //router.patch('/password-reset/:id',customerController.resetPassword);
