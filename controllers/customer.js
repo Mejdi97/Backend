@@ -1,4 +1,4 @@
-const { Customer } = require('../models/Customer');
+const Customer  = require('../models/Customer');
 var mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const express = require('express');
@@ -113,6 +113,7 @@ exports.login = (req, res, next) => {
 
 
 //forgot password
+
 exports.forgotPassword = async (req, res, next) => {
   Customer.findOne({ email: req.body.email })
     .then(Customer => {
