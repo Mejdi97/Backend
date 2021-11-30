@@ -27,8 +27,23 @@ const CustomerSchema = new mongoose.Schema({
   },
   profile_picture: {
     type: String
+  },
+  resetLink:{
+    type:String
   }
 
 })
 
+const validate = (user) => {
+  const schema = Joi.object({
+      name: Joi.string().required(),
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),
+  });
+  return schema.validate(user);
+};
+
+
+
 module.exports = mongoose.model('Customer', CustomerSchema)
+module.exports= {validate}

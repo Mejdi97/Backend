@@ -1,9 +1,11 @@
-const Customer = require('../models/Customer');
+const { Customer } = require('../models/Customer');
 var mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../middleware/send-mail');
+const Joi = require("joi");
+
 
 
 
@@ -36,17 +38,15 @@ exports.createCustomer = async (req, res) => {
   console.log(req.file)
   try {
 
-    const hashedPAssword = await bcrypt.hash(req.body.password, 10)
+    const hashedPassword = await bcrypt.hash(req.body.password, 10)
     const customer = new Customer({
       wallet_address: req.body.wallet_address,
       name: req.body.name,
       url: req.body.url,
       bio: req.body.bio,
       email: req.body.email,
-      password: hashedPAssword,
+      password: hashedPassword,
       social_media_accounts: req.body.social_media_accounts
-
-
     })
     const newCustomer = await customer.save();
     res.status(201).json(newCustomer)
@@ -58,10 +58,10 @@ exports.createCustomer = async (req, res) => {
 
 //update customer
 exports.updateCustomer = async (req, res) => {
-  Customer.updateOne({ _id: req.params.id }, 
+  Customer.updateOne({ _id: req.params.id },
     { ...req.body, _id: req.params.id })
-  .then(() => res.status(200).json({ message: 'Objet modifié !'}))
-  .catch(error => res.status(400).json({ error }));
+    .then(() => res.status(200).json({ message: 'Customer Updated' }))
+    .catch(error => res.status(400).json({ error }));
 }
 
 //delete customer
@@ -82,7 +82,6 @@ exports.deleteCustomer = async (req, res) => {
 
 
 //login
-
 exports.login = (req, res, next) => {
   Customer.findOne({ email: req.body.email })
     .then(Customer => {
@@ -108,21 +107,25 @@ exports.login = (req, res, next) => {
     .catch(error => res.status(500).json({ error }))
 }
 
-//forgot password
-exports.forgotPassword = async (req, res, next) => {
 
+
+
+
+
+
+exports.forgotPassword = async (req, res, next) => {
   Customer.findOne({ email: req.body.email })
     .then(Customer => {
       if (Customer) {
-        const token = jwt.sign({ id: Customer._id }, process.env.JWT_ACTIVATE_TOKEN, { expiresIn: '20m' })
-        const link = `${process.env.URL}/password-reset/${Customer._id}/${token}`;
+        let token = Token.findOne({ CustomerId: Customer._id });
         if (!token) {
           token = new token({
-              CustomerId: Customer._id,
-              resetLink: token,
+            CutomerId: Customer._id,
+            token: crypto.randomBytes(32).toString("hex"),
           }).save();
-      }
-        sendEmail(Customer.email, "Activation Email", `<a href="link"> use this link to reset your password</a>` + link);
+        }
+        const link = `${process.env.BASE_URL}/password-reset/${Customer._id}/${token.token}`;
+        sendEmail(user.email, "Password reset", link);
         return res.status(200).json({ message: 'An email have been sent !' });
 
       } else {
@@ -134,28 +137,26 @@ exports.forgotPassword = async (req, res, next) => {
 
 }
 
-
-
 //reset password
-exports.resetPassword = async (req, res) => {
+/* exports.resetPassword = async (req, res) => {
 
 
   try {
     const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
     const CustomerId = decodedToken.CustomerId;
     if (req.body.CustomerId && req.body.CustomerId !== CustomerId)
-     updatedCustomer = Customer.updateOne(
-      { _id: req.params.id },
-      {
-        $set: {
-          password: req.body.hashedPAssword,
+      updatedCustomer = Customer.updateOne(
+        { _id: req.params.id },
+        {
+          $set: {
+            password: req.body.hashedPAssword,
+          }
         }
-      }
-    );
+      );
     res.json(updatedCustomer);
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
 
-}
+} */
 

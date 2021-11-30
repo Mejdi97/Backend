@@ -16,7 +16,7 @@ router.get('/:id',customerController.getOneCustomer);
 router.post('/', customerController.createCustomer);
 
 //UPDATE
-router.put('/:id', customerController.updateCustomer);
+router.put('/:id', auth,customerController.updateCustomer);
 
 // Deleting One
 router.delete('/:id', auth, customerController.deleteCustomer);
@@ -28,7 +28,7 @@ router.post('/login',customerController.login);
 router.post('/forgot-password',customerController.forgotPassword);
 
 //reset password
-router.patch('/password-reset/:id',customerController.resetPassword);
+//router.patch('/password-reset/:id',customerController.resetPassword);
 
 
 
