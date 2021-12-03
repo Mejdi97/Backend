@@ -106,18 +106,12 @@ exports.login = (req, res, next) => {
     .catch(error => res.status(500).json({ error }))
 }
 
-
-
-
-
-
-//forgot password
-/* 
+//forgot password 
 exports.forgotPassword = async (req, res, next) => {
   Customer.findOne({ email: req.body.email })
     .then(Customer => {
       if (Customer) {
-        let token = Token.findOne({ CustomerId: Customer._id });
+        let token = token.findOne({ CustomerId: Customer._id });
         if (!token) {
           token = new token({
             CutomerId: Customer._id,
@@ -135,12 +129,10 @@ exports.forgotPassword = async (req, res, next) => {
 
     })
 
-} */
+} 
 
 //reset password
 /* exports.resetPassword = async (req, res) => {
-
-
   try {
     const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
     const CustomerId = decodedToken.CustomerId;
