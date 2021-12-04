@@ -19,9 +19,6 @@ const auth = require('../middleware/auth');
 router.get('/', customerController.getAllCustomer);
 
 // Getting One
-<<<<<<< HEAD
-router.get('/:id', auth,customerController.getOneCustomer);
-=======
 
 /**
  * @swagger
@@ -43,7 +40,6 @@ router.get('/:id', auth,customerController.getOneCustomer);
  *         description: The customer was not found
  */
 router.get('/:id',customerController.getOneCustomer);
->>>>>>> d3d76ebe94020c50799527533aad6f983172f636
 
 // Creating one
 
@@ -67,9 +63,6 @@ router.post('/', customerController.createCustomer);
 
 
 //UPDATE
-<<<<<<< HEAD
-router.patch('/:id',auth, customerController.updateCustomer);
-=======
 /**
  * @swagger
  * /customers/{id}:
@@ -90,7 +83,6 @@ router.patch('/:id',auth, customerController.updateCustomer);
  *         description: The customer was not found
  */
 router.put('/:id', auth,customerController.updateCustomer);
->>>>>>> d3d76ebe94020c50799527533aad6f983172f636
 
 // Deleting One
 
@@ -119,12 +111,11 @@ router.delete('/:id', auth, customerController.deleteCustomer);
 //login 
 router.post('/login',customerController.login);
 
+//forgot password 
+router.post('/forgot-password',customerController.forgotPassword);
 
-
-
-
-
-
+//reset password
+//router.patch('/password-reset/:id',customerController.resetPassword);
 
 
 
