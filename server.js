@@ -28,11 +28,10 @@ const swaggerOptions = {
         servers: ["http://localhost:3001"]
       }
     },
-    apis: ['.routes/*.js']
+    apis: ['./routes/*.js']
   };
 
-  const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
 
 
 
@@ -55,7 +54,7 @@ app.use('/like', likeRoutes)
 const bidsRoutes = require('./routes/bids')
 app.use('/bids', bidsRoutes)
 
-
-
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.listen(3001, () => console.log('Server Started'))
