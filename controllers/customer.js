@@ -2,7 +2,12 @@ const Customer = require ('../models/Customer');
 var mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const express = require('express');
+<<<<<<< HEAD
 const jwt = require ('jsonwebtoken');
+=======
+const jwt = require('jsonwebtoken');
+const sendEmail = require('../middleware/send-mail');
+>>>>>>> d3d76ebe94020c50799527533aad6f983172f636
 
 
 
@@ -29,7 +34,7 @@ exports.getOneCustomer = (req, res) => {
 
 
 
-//create custumor
+//create custumorr
 exports.createCustomer = async (req, res) => {
 
     console.log(req.file)
@@ -86,6 +91,7 @@ exports.createCustomer = async (req, res) => {
               message: 'Deleted!'
             });
           }
+<<<<<<< HEAD
         ).catch(
           (error) => {res.status(400).json({error: error});
           }
@@ -106,6 +112,59 @@ exports.createCustomer = async (req, res) => {
       .then(valid => {
         if (!valid) {
           return res.status(401).json({ error: 'password incorrect !' });
+=======
+          res.status(200).json({
+            CustomerId: Customer._id,
+            token: jwt.sign(
+              { CustomerId: Customer._id },
+              'RANDOM_TOKEN_SECRET',
+              { expiresIn: '24h' }
+            )
+          });
+        })
+        .catch(error => res.status(500).json({ error }));
+    })
+    .catch(error => res.status(500).json({ error }))
+}
+
+//forgot password 
+exports.forgotPassword = async (req, res, next) => {
+  Customer.findOne({ email: req.body.email })
+    .then(Customer => {
+      if (Customer) {
+        let token = token.findOne({ CustomerId: Customer._id });
+        if (!token) {
+          token = new token({
+            CutomerId: Customer._id,
+            token: crypto.randomBytes(32).toString("hex"),
+          }).save();
+        }
+        const link = `${process.env.BASE_URL}/password-reset/${Customer._id}/${token.token}`;
+        sendEmail(user.email, "Password reset", link);
+        return res.status(200).json({ message: 'An email have been sent !' });
+
+      } else {
+        return res.status(401).json({ error: 'Customer not found !' });
+
+      }
+
+    })
+
+} 
+
+//reset password
+/* exports.resetPassword = async (req, res) => {
+  try {
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    const CustomerId = decodedToken.CustomerId;
+    if (req.body.CustomerId && req.body.CustomerId !== CustomerId)
+      updatedCustomer = Customer.updateOne(
+        { _id: req.params.id },
+        {
+          $set: {
+            password: req.body.hashedPAssword,
+          }
+>>>>>>> d3d76ebe94020c50799527533aad6f983172f636
         }
         res.status(200).json({
             CustomerId: Customer._id,
