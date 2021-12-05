@@ -8,7 +8,7 @@ const CustomerSchema = new mongoose.Schema({
   },
   name: {
     type: String,
-    required : true
+    required: true
   },
   url: {
     type: String,
@@ -16,8 +16,8 @@ const CustomerSchema = new mongoose.Schema({
   bio: {
     type: String
   },
-  email:{
-    type : String
+  email: {
+    type: String
   },
   password: {
     type: String,
@@ -28,8 +28,12 @@ const CustomerSchema = new mongoose.Schema({
   profile_picture: {
     type: String
   },
-  resetLink:{
-    type:String
+  couverture_picture: {
+    type: String
+  }
+  ,
+  resetLink: {
+    type: String
   }
 
 })

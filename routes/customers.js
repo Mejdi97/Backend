@@ -4,8 +4,11 @@ const customerController = require('../controllers/customer');
 const Customer = require('../models/Customer')
 const mongoose = require('mongoose')
 const auth = require('../middleware/auth');
+const multer = require('../middleware/multer-config');
+
 
 // getting all
+
 /**
  * @swagger
  * /customers:
@@ -39,6 +42,7 @@ router.get('/', customerController.getAllCustomer);
  *       404:
  *         description: The customer was not found
  */
+
 router.get('/:id', customerController.getOneCustomer);
 
 // Creating one
@@ -106,6 +110,8 @@ router.post('/', customerController.createCustomer);
  *   put:
  *     summary: update the customer by id
  *     tags: [customers]
+ *     consumes:
+ *       - multipart/form-data
  *     parameters:
  *       - in: path
  *         name: id
@@ -148,18 +154,22 @@ router.post('/', customerController.createCustomer);
  *         schema:
  *           type: string
  *         required: false
- *       - in: path
+ *       - in: formData
  *         name: profile_picture
- *         schema:
- *           type: string
+ *         type: file
  *         required: false
+ *       - in: formData
+ *         name: couverture_picture
+ *         type: file
  *     responses:
  *       200:
  *         description: The customer description by id
  *       404:
  *         description: The customer was not found
  */
-router.put('/:id', auth, customerController.updateCustomer);
+
+router.put('/:id',multer.fields([{name:'profile_picture', maxCount: 1}, {name: 'couverture_picture',maxCount: 1}]), customerController.updateCustomer);
+
 
 // Deleting One
 
@@ -187,7 +197,6 @@ router.delete('/:id', auth, customerController.deleteCustomer);
 
 //login 
 
-
 /**
  * @swagger
  * /customers/login:
@@ -198,12 +207,12 @@ router.delete('/:id', auth, customerController.deleteCustomer);
  *         name: email
  *         schema:
  *           type: string
- *         required: false
+ *         required: true
  *       - in: path
  *         name: password
  *         schema:
  *           type: string
- *         required: false
+ *         required: true
  *     responses:
  *       200:
  *         description: The customer created
@@ -214,11 +223,30 @@ router.delete('/:id', auth, customerController.deleteCustomer);
 router.post('/login', customerController.login);
 
 //forgot password 
+
+/**
+ * @swagger
+ * /customers/forgot-password:
+ *   post:
+ *     tags: [Forget Password]  
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: The customer created
+ *       404:
+ *         description: error
+ */
+
+
 router.post('/forgot-password', customerController.forgotPassword);
 
 //reset password
 //router.patch('/password-reset/:id',customerController.resetPassword);
-
 
 
 module.exports = router;
