@@ -133,21 +133,18 @@ exports.login = (req, res, next) => {
 exports.forgotPassword = async (req, res, next) => {
   Customer.findOne({ email: req.body.email })
     .then(Customer => {
+      var token="";
       if (Customer) {
-        let token = token.findOne({ CustomerId: Customer._id });
-        if (!token) {
-          token = new token({
-            CutomerId: Customer._id,
-            token: crypto.randomBytes(32).toString("hex"),
-          }).save();
-        }
-        const link = `${process.env.BASE_URL}/password-reset/${Customer._id}/${token.token}`;
-        sendEmail(user.email, "Password reset", link);
-        return res.status(200).json({ message: 'An email have been sent !' });
+         token = jwt.sign({CustomerId:Customer._id},'RANDOM_TOKEN_SECRET',{expiresIn:'24h'}) ;
 
+        res.status(200).json({
+          CustomerId: Customer._id,
+          token: token
+        });
+        const link = `${process.env.URL}/password-reset/${Customer._id}/${token}`;
+        sendEmail(Customer.email, "Password reset", link);
       } else {
         return res.status(401).json({ error: 'Customer not found !' });
-
       }
 
     })
