@@ -1,57 +1,77 @@
 var mongoose = require('mongoose');
 const express = require('express');
-const Favorite = require ('../models/favorite');
-const favorite = require('../models/favorite');
+const Favorite = require('../models/favorite');
+
+
+
+//get all
+exports.getAllFavorite = async (req, res) => {
+  
+  try {
+    const favorites = await Favorite.find()
+    res.json(favorites)
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+}
+
+// Creating one
+exports.createFavorite = (req, res) => {
+
+  
+  const favorite = new Favorite({
+    asset_id: req.body.asset_id,
+    
+  });
+  favorite.save().then(
+    () => {
+      res.status(201).json({
+        message: 'saved!'
+      });
+    }
+  ).catch(
+    (error) => {
+      res.status(400).json({
+        error: error
+      });
+    }
+  );
+}
+
 
 
 
 //get one
-exports.getAllFavorite = async (req, res) => {
-    try {
-      const favorite = await favorite.find()
-      res.json(favorite)
-    } catch (err) {
-      res.status(500).json({ message: err.message })
+exports.getOneFavorite = (req, res) => {
+  Favorite.findOne({
+    _id: req.params.id
+  }).then(
+    (thing) => {
+      res.status(200).json(thing);
     }
-  }
-
-  // Creating one
-exports.createFavorite = async (req, res) => {
-   
-    const favorite = new Favorite ({
-        asset_id: req.body.asset_id,
-        
-    });
-     favorite.save()
-     .then(() => res.status(201).json(favorite))
-      .catch(error => res.status(400).json({ error }));
-    
-
-};
+  ).catch(
+    (error) => {
+      res.status(404).json({
+        error: error
+      });
+    }
+  );
+}
 
 
-  exports.getOneFavorite = (req, res) => {
-    favorite.findById(mongoose.Types.ObjectId(req.params.id)
-   , (err, favorite) => {
-     res.json(favorite);
- 
-     return;
-   });
- }
+//delete
+exports.deleteFavorite = async (req, res) => {
+  Favorite.deleteOne({ _id: req.params.id }).then(
+    () => {
+      res.status(200).json({
+        message: 'Deleted!'
+      });
+    }
+  ).catch(
+    (error) => {
+      res.status(400).json({ error: error });
+    }
+  );
+}
 
 
- //delete
- exports.deleteFavorite = async (req, res) => {
-    Favorite.deleteOne({_id: req.params.id}).then(
-      () => {
-        res.status(200).json({
-          message: 'Deleted!'
-        });
-      }
-    ).catch(
-      (error) => {res.status(400).json({error: error});
-      }
-    );
-  }
-  
- 

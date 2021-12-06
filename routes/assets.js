@@ -6,8 +6,57 @@ const assetController = require('../controllers/asset');
 const multer = require ('../middleware/multer-config');
 const auth = require ('../middleware/auth');
 
+
 //Creating one
-router.post('/',multer,assetController.createAsset );
+
+/**
+ * @swagger
+ * /assets:
+ *   post:
+ *     tags: [assets]
+ *     parameters:
+ *       - in: path
+ *         name: owner
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: path
+ *         name: asset_picture
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: path
+ *         name: name_asset
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: path
+ *         name: description
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: path
+ *         name: bids
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: path
+ *         name: instant_sale
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: path
+ *         name: price
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: add asset to my favorites
+ *       404:
+ *         description: error
+ */
+router.post('/',multer.single('asset_picture'),assetController.createAsset );
 
 //GETTING ALL
 

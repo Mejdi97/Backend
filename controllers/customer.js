@@ -1,4 +1,4 @@
-const Customer  = require('../models/Customer');
+const Customer = require('../models/Customer');
 var mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const express = require('express');
@@ -24,7 +24,6 @@ exports.getOneCustomer = (req, res) => {
   Customer.findById(mongoose.Types.ObjectId(req.params.id)
     , (err, customer) => {
       res.json(customer);
-
       return;
     });
 }
@@ -45,7 +44,8 @@ exports.createCustomer = async (req, res) => {
       bio: req.body.bio,
       email: req.body.email,
       password: hashedPassword,
-      social_media_accounts: req.body.social_media_accounts
+      social_media_accounts: req.body.social_media_accounts,
+
     })
     const newCustomer = await customer.save();
     res.status(201).json(newCustomer)
@@ -57,10 +57,33 @@ exports.createCustomer = async (req, res) => {
 
 //update customer
 exports.updateCustomer = async (req, res) => {
-  Customer.updateOne({ _id: req.params.id },
-    { ...req.body, _id: req.params.id })
-    .then(() => res.status(200).json({ message: 'Customer Updated' }))
-    .catch(error => res.status(400).json({ error }));
+
+  const customer = new Customer({
+    _id: req.params.id,
+    wallet_address: req.body.wallet_address,
+    name: req.body.name,
+    url: req.body.url,
+    bio: req.body.bio,
+    email: req.body.email,
+    social_media_accounts: req.body.social_media_accounts,
+    profile_picture: req.files['profile_picture'][0].path,
+    couverture_picture: req.files['couverture_picture'][0].path
+
+  });
+
+  Customer.updateOne({ _id: req.params.id }, customer).then(
+    () => {
+      res.status(201).json({
+        message: 'Customer updated successfully!',
+      });
+    }
+  ).catch(
+    (error) => {
+      res.status(400).json({
+        error: error
+      });
+    }
+  );
 }
 
 //delete customer
@@ -110,26 +133,23 @@ exports.login = (req, res, next) => {
 exports.forgotPassword = async (req, res, next) => {
   Customer.findOne({ email: req.body.email })
     .then(Customer => {
+      var token="";
       if (Customer) {
-        let token = token.findOne({ CustomerId: Customer._id });
-        if (!token) {
-          token = new token({
-            CutomerId: Customer._id,
-            token: crypto.randomBytes(32).toString("hex"),
-          }).save();
-        }
-        const link = `${process.env.BASE_URL}/password-reset/${Customer._id}/${token.token}`;
-        sendEmail(user.email, "Password reset", link);
-        return res.status(200).json({ message: 'An email have been sent !' });
+         token = jwt.sign({CustomerId:Customer._id},'RANDOM_TOKEN_SECRET',{expiresIn:'24h'}) ;
 
+        res.status(200).json({
+          CustomerId: Customer._id,
+          token: token
+        });
+        const link = `${process.env.URL}/password-reset/${Customer._id}/${token}`;
+        sendEmail(Customer.email, "Password reset", link);
       } else {
         return res.status(401).json({ error: 'Customer not found !' });
-
       }
 
     })
 
-} 
+}
 
 //reset password
 /* exports.resetPassword = async (req, res) => {
@@ -151,4 +171,6 @@ exports.forgotPassword = async (req, res, next) => {
   }
 
 } */
+
+
 
