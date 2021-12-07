@@ -5,6 +5,20 @@ const favorite = require('../models/favorite')
 const mongoose = require('mongoose')
 
 
+
+
+
+
+/**
+ * @swagger
+ * definitions:
+ *   favorites:
+ *     properties:
+ *       asset_id:
+ *         type: array
+ * 
+ */
+
 // Getting all
 
 /**
@@ -20,7 +34,6 @@ const mongoose = require('mongoose')
 router.get('/', favoriteController.getAllFavorite);
  
 //GETTING ONE 
-
 /**
  * @swagger
  * /favorite/{id}:
@@ -44,23 +57,25 @@ router.get('/', favoriteController.getAllFavorite);
 router.get('/:id', favoriteController.getOneFavorite);
 
 // Creating one
-
 /**
  * @swagger
- * /favorite:
+ * /customers:
  *   post:
- *     tags: [favorites]
+ *     tags:
+ *       - favorites
+ *     description: add a favorite 
+ *     produces:
+ *       - application/json
  *     parameters:
- *       - in: path
- *         name: asset_id
- *         schema:
- *           type: string
+ *       - name: favorites
+ *         description: favorites object
+ *         in: body
  *         required: true
+ *         schema:
+ *           $ref: '#/definitions/favorites'
  *     responses:
  *       200:
- *         description: add asset to my favorites
- *       404:
- *         description: error
+ *         description: Successfully added
  */
 
 router.post('/', favoriteController.createFavorite);

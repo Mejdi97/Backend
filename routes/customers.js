@@ -5,6 +5,34 @@ const Customer = require('../models/Customer')
 const mongoose = require('mongoose')
 const auth = require('../middleware/auth');
 const multer = require('../middleware/multer-config');
+const swaggerJsDoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
+
+
+
+/**
+ * @swagger
+ * definitions:
+ *   customers:
+ *     properties:
+ *       wallet_address:
+ *         type: string
+ *       name:
+ *         type: string
+ *       url:
+ *         type: string
+ *       bio:
+ *         type: string
+ *       email:
+ *         type: string
+ *       password:
+ *         type: string
+ *       social_media_accounts:
+ *         type: array
+ * 
+ */
+
+
 
 
 // getting all
@@ -45,60 +73,25 @@ router.get('/', customerController.getAllCustomer);
 
 router.get('/:id', customerController.getOneCustomer);
 
-// Creating one
-
-
 /**
  * @swagger
  * /customers:
  *   post:
- *     tags: [customers]
+ *     tags:
+ *       - customers
+ *     description: Creates a new customer
+ *     produces:
+ *       - application/json
  *     parameters:
- *       - in: path
- *         name: wallet_address
- *         schema:
- *           type: string
+ *       - name: customer
+ *         description: customer object
+ *         in: body
  *         required: true
- *       - in: path
- *         name: name
  *         schema:
- *           type: string
- *         required: true
- *       - in: path
- *         name: url
- *         schema:
- *           type: string
- *         required: false
- *       - in: path
- *         name: bio
- *         schema:
- *           type: string
- *         required: false
- *       - in: path
- *         name: email
- *         schema:
- *           type: string
- *         required: false
- *       - in: path
- *         name: password
- *         schema:
- *           type: string
- *         required: false
- *       - in: path
- *         name: social_media_accounts
- *         schema:
- *           type: string
- *         required: false
- *       - in: formData
- *         name: profile_picture
- *         schema:
- *           type: file
- *         required: false
+ *           $ref: '#/definitions/customers'
  *     responses:
  *       200:
- *         description: The customer created
- *       404:
- *         description: error
+ *         description: Successfully created
  */
 
 router.post('/', customerController.createCustomer);
@@ -106,54 +99,20 @@ router.post('/', customerController.createCustomer);
 //UPDATE
 /**
  * @swagger
- * /customers/{id}:
+ * /customers:
  *   put:
- *     summary: update the customer by id
- *     tags: [customers]
- *     consumes:
- *       - multipart/form-data
+ *     tags:
+ *       - customers
+ *     description: update a customer
+ *     produces:
+ *       - application/json
  *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
+ *       - name: customer
+ *         description: customer object
+ *         in: body
  *         required: true
- *         description: The customer id
- *       - in: path
- *         name: wallet_address
  *         schema:
- *           type: string
- *         required: true
- *       - in: path
- *         name: name
- *         schema:
- *           type: string
- *         required: true
- *       - in: path
- *         name: url
- *         schema:
- *           type: string
- *         required: false
- *       - in: path
- *         name: bio
- *         schema:
- *           type: string
- *         required: false
- *       - in: path
- *         name: email
- *         schema:
- *           type: string
- *         required: false
- *       - in: path
- *         name: password
- *         schema:
- *           type: string
- *         required: false
- *       - in: path
- *         name: social_media_accounts
- *         schema:
- *           type: string
- *         required: false
+ *           $ref: '#/definitions/customers'
  *       - in: formData
  *         name: profile_picture
  *         type: file
@@ -168,7 +127,7 @@ router.post('/', customerController.createCustomer);
  *         description: The customer was not found
  */
 
-router.put('/:id',multer.fields([{name:'profile_picture', maxCount: 1}, {name: 'couverture_picture',maxCount: 1}]), customerController.updateCustomer);
+router.put('/:id', multer.fields([{ name: 'profile_picture', maxCount: 1 }, { name: 'couverture_picture', maxCount: 1 }]), customerController.updateCustomer);
 
 
 // Deleting One
@@ -193,7 +152,7 @@ router.put('/:id',multer.fields([{name:'profile_picture', maxCount: 1}, {name: '
  *         description: The customer was not found
  */
 
-router.delete('/:id', auth, customerController.deleteCustomer);
+router.delete('/:id', customerController.deleteCustomer);
 
 //login 
 
@@ -201,6 +160,7 @@ router.delete('/:id', auth, customerController.deleteCustomer);
  * @swagger
  * /customers/login:
  *   post:
+ *     summary: use this route to login 
  *     tags: [Login]  
  *     parameters:
  *       - in: path
@@ -215,7 +175,7 @@ router.delete('/:id', auth, customerController.deleteCustomer);
  *         required: true
  *     responses:
  *       200:
- *         description: The customer created
+ *         description: successfully login
  *       404:
  *         description: error
  */
@@ -226,8 +186,9 @@ router.post('/login', customerController.login);
 
 /**
  * @swagger
- * /customers/forgot-password:
+ * /customers/recover:
  *   post:
+ *     summary: use this route to have access to change password 
  *     tags: [Forget Password]  
  *     parameters:
  *       - in: path
@@ -237,16 +198,41 @@ router.post('/login', customerController.login);
  *         required: true
  *     responses:
  *       200:
- *         description: The customer created
+ *         description: successfully sent !
  *       404:
  *         description: error
  */
+router.post('/recover', customerController.recover);
 
 
+
+
+router.get('/reset/:token', customerController.reset);
+// change the password 
+/**
+ * @swagger
+ * /customers/reset/{token}:
+ *   post:
+ *     summary: use this route to reset your password 
+ *     tags: [Forget Password]  
+ *     parameters:
+ *       - in: path
+ *         password: password
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: password updated !
+ *       404:
+ *         description: error
+ */
+router.post('/reset/:token', customerController.resetPassword);
+
+/*
 router.post('/forgot-password', customerController.forgotPassword);
 
 //reset password
-//router.patch('/password-reset/:id',customerController.resetPassword);
-
-
+router.put('/password-reset/:id',auth,customerController.resetPassword);
+*/
 module.exports = router;

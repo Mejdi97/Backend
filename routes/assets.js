@@ -7,55 +7,55 @@ const multer = require ('../middleware/multer-config');
 const auth = require ('../middleware/auth');
 
 
+
+
+/**
+ * @swagger
+ * definitions:
+ *   assets:
+ *     properties:
+ *       owner:
+ *         type: object
+ *       asset_picture:
+ *         type: string
+ *       name_asset:
+ *         type: string
+ *       description:
+ *         type: string
+ *       bids:
+ *         type: boolean
+ *       instant_sale:
+ *         type: boolean
+ *       price:
+ *         type: number
+ * 
+ */
+
+
 //Creating one
 
 /**
  * @swagger
  * /assets:
  *   post:
- *     tags: [assets]
+ *     tags:
+ *       - assets
+ *     description: Creates a new asset
+ *     produces:
+ *       - application/json
  *     parameters:
- *       - in: path
- *         name: owner
- *         schema:
- *           type: string
+ *       - name: asset
+ *         description: assets object
+ *         in: body
  *         required: true
- *       - in: path
- *         name: asset_picture
  *         schema:
- *           type: string
- *         required: true
- *       - in: path
- *         name: name_asset
- *         schema:
- *           type: string
- *         required: true
- *       - in: path
- *         name: description
- *         schema:
- *           type: string
- *         required: true
- *       - in: path
- *         name: bids
- *         schema:
- *           type: string
- *         required: true
- *       - in: path
- *         name: instant_sale
- *         schema:
- *           type: string
- *         required: true
- *       - in: path
- *         name: price
- *         schema:
- *           type: string
- *         required: true
+ *           $ref: '#/definitions/assets'
  *     responses:
  *       200:
- *         description: add asset to my favorites
- *       404:
- *         description: error
+ *         description: Successfully created
  */
+
+
 router.post('/',multer.single('asset_picture'),assetController.createAsset );
 
 //GETTING ALL
@@ -97,25 +97,27 @@ router.get('/',assetController.getAllAssets);
 router.get('/:id',assetController.getAsset);
 
 //UPDATE
-
 /**
  * @swagger
- * /assets/{id}:
+ * /assets:
  *   put:
- *     summary: update the asset by id
- *     tags: [assets]
+ *     tags:
+ *       - assets
+ *     description: update a single asset
+ *     produces:
+ *       - application/json
  *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
+ *       - name: assets
+ *         description: assets object
+ *         in: body
  *         required: true
- *         description: The asset id
+ *         schema:
+ *           $ref: '#/definitions/assets'
  *     responses:
  *       200:
- *         description: The asset description by id
+ *         description: The assets description by id
  *       404:
- *         description: The asset was not found
+ *         description: The assets was not found
  */
 router.patch('/:id',auth,assetController.updateAsset);
  
@@ -124,7 +126,7 @@ router.patch('/:id',auth,assetController.updateAsset);
  * @swagger
  * /assets/{id}:
  *   delete:
- *     summary: delete the customer by id
+ *     summary: delete the asset by id
  *     tags: [assets]
  *     parameters:
  *       - in: path
