@@ -11,7 +11,7 @@ const orderSchema = new mongoose.Schema({
     seller_name:{
         type:String
     },
-    seller_name:{
+    buyer_name:{
         type:String
     },
     asset_name:{
