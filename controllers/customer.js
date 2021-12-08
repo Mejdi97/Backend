@@ -3,9 +3,7 @@ var mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const express = require('express');
 const jwt = require('jsonwebtoken');
-//const sendEmail = require('../middleware/send-mail');
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const nodemailer = require("nodemailer");
 
 
 
@@ -143,20 +141,33 @@ exports.recover = (req, res) => {
         .then(customer => {
           // send email
           let link = "http://" + req.headers.host + "/customers/reset/" + customer.resetPasswordToken;
-          const mailOptions = {
-            to: customer.email,
-            from: process.env.FROM_EMAIL,
-            subject: "Password change request",
-            text: `Hi ${customer.name} \n 
-                  Please click on the following link ${link} to reset your password. \n\n 
-                  If you did not request this, please ignore this email and your password will remain unchanged.\n`,
-          };
-          console.log(mailOptions)
-          sgMail.send(mailOptions, (error, result) => {
-            if (error) return res.status(500).json({ message: error.message });
 
-            res.status(200).json({ message: 'A reset email has been sent to ' + customer.email + '.' });
+          var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: process.env.MY_EMAIL,
+              pass: process.env.MY_PASS
+            }
           });
+
+          var mailOptions = {
+            from: 'nftland251@gmail.com',
+            to: customer.email,
+            subject: 'Password change request',
+            text: `Hi ${customer.name} \n 
+            Please click on the following link ${link} to reset your password. \n\n 
+            If you did not request this, please ignore this email and your password will remain unchanged.\n`
+          };
+
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+          });
+
+          res.status(200).json({ message: 'A reset email has been sent to ' + customer.email + '.' });
         })
         .catch(err => res.status(500).json({ message: err.message }));
     })
@@ -192,54 +203,36 @@ exports.resetPassword = (req, res) => {
         if (err) return res.status(500).json({ message: err.message });
 
         // send email
-        const mailOptions = {
+
+        var transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.MY_EMAIL,
+            pass: process.env.MY_PASS
+          }
+        });
+
+        var mailOptions = {
+          from: 'nftland251@gmail.com',
           to: customer.email,
-          from: process.env.FROM_EMAIL,
           subject: "Your password has been changed",
           text: `Hi ${customer.name} \n 
                   This is a confirmation that the password for your account ${customer.email} has just been changed.\n`
         };
-        console.log(mailOptions)
 
-        sgMail.send(mailOptions, (error, result) => {
-          if (error) return res.status(500).json({ message: error.message });
 
-          res.status(200).json({ message: 'Your password has been updated.' });
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log('Email sent: ' + info.response);
+          }
         });
+        next();
       });
     });
 };
 
 
-/*
-//forgot password
-exports.forgotPassword = async (req, res, next) => {
-  Customer.findOne({ email: req.body.email })
-    .then(Customer => {
-      var token = "";
-      if (Customer) {
-        token = jwt.sign({ CustomerId: Customer._id }, 'RANDOM_TOKEN_SECRET', { expiresIn: '24h' });
-
-        res.status(200).json({
-          CustomerId: Customer._id,
-          token: token
-        });
-        const link = `${process.env.URL}/password-reset/${Customer._id}/${token}`;
-        sendEmail(Customer.email, "Password reset", link);
-      } else {
-        return res.status(401).json({ error: 'Customer not found !' });
-      }
-
-    })
-
-}
-
-//reset password
-exports.resetPassword = async (req, res) => {
-
-
-
-}
-*/
 
 

@@ -9,7 +9,6 @@ const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 
 
-
 /**
  * @swagger
  * definitions:
@@ -31,8 +30,6 @@ const swaggerUi = require("swagger-ui-express");
  *         type: array
  * 
  */
-
-
 
 
 // getting all
@@ -227,6 +224,7 @@ router.get('/reset/:token', customerController.reset);
  *       404:
  *         description: error
  */
+
 router.post('/reset/:token', customerController.resetPassword);
 
 /*
