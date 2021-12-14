@@ -1,9 +1,9 @@
-const Customer  = require('../models/Customer');
+const Customer = require('../models/Customer');
 var mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const sendEmail = require('../middleware/send-mail');
+const nodemailer = require("nodemailer");
 
 
 
@@ -24,7 +24,6 @@ exports.getOneCustomer = (req, res) => {
   Customer.findById(mongoose.Types.ObjectId(req.params.id)
     , (err, customer) => {
       res.json(customer);
-
       return;
     });
 }
@@ -34,18 +33,18 @@ exports.getOneCustomer = (req, res) => {
 //create custumorr
 exports.createCustomer = async (req, res) => {
 
-  console.log(req.file)
   try {
 
-    const hashedPassword = await bcrypt.hash(req.body.password, 10)
+    //const hashedPassword = await bcrypt.hash(req.body.password, 10)
     const customer = new Customer({
       wallet_address: req.body.wallet_address,
       name: req.body.name,
       url: req.body.url,
       bio: req.body.bio,
       email: req.body.email,
-      password: hashedPassword,
+      password: req.body.password,
       social_media_accounts: req.body.social_media_accounts
+
     })
     const newCustomer = await customer.save();
     res.status(201).json(newCustomer)
@@ -57,10 +56,32 @@ exports.createCustomer = async (req, res) => {
 
 //update customer
 exports.updateCustomer = async (req, res) => {
-  Customer.updateOne({ _id: req.params.id },
-    { ...req.body, _id: req.params.id })
-    .then(() => res.status(200).json({ message: 'Customer Updated' }))
-    .catch(error => res.status(400).json({ error }));
+  const customer = new Customer({
+    _id: req.params.id,
+    wallet_address: req.body.wallet_address,
+    name: req.body.name,
+    url: req.body.url,
+    bio: req.body.bio,
+    email: req.body.email,
+    social_media_accounts: req.body.social_media_accounts,
+    profile_picture: req.files['profile_picture'][0].path,
+    couverture_picture: req.files['couverture_picture'][0].path
+
+  });
+
+  Customer.updateOne({ _id: req.params.id }, customer).then(
+    () => {
+      res.status(201).json({
+        message: 'Customer updated successfully!',
+      });
+    }
+  ).catch(
+    (error) => {
+      res.status(400).json({
+        error: error
+      });
+    }
+  );
 }
 
 //delete customer
@@ -106,48 +127,114 @@ exports.login = (req, res, next) => {
     .catch(error => res.status(500).json({ error }))
 }
 
-//forgot password 
-exports.forgotPassword = async (req, res, next) => {
+
+
+exports.recover = (req, res) => {
   Customer.findOne({ email: req.body.email })
-    .then(Customer => {
-      if (Customer) {
-        let token = token.findOne({ CustomerId: Customer._id });
-        if (!token) {
-          token = new token({
-            CutomerId: Customer._id,
-            token: crypto.randomBytes(32).toString("hex"),
-          }).save();
-        }
-        const link = `${process.env.BASE_URL}/password-reset/${Customer._id}/${token.token}`;
-        sendEmail(user.email, "Password reset", link);
-        return res.status(200).json({ message: 'An email have been sent !' });
+    .then(customer => {
+      if (!customer) return res.status(401).json({ message: 'The email address ' + req.body.email + ' is not associated with any account. Double-check your email address and try again.' });
+      //Generate and set password reset token
+      customer.generatePasswordReset();
 
-      } else {
-        return res.status(401).json({ error: 'Customer not found !' });
+      // Save the updated user object
+      customer.save()
+        .then(customer => {
+          // send email
+          let link = "http://" + req.headers.host + "/customers/reset/" + customer.resetPasswordToken;
 
-      }
+          var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: process.env.MY_EMAIL,
+              pass: process.env.MY_PASS
+            }
+          });
 
+          var mailOptions = {
+            from: 'nftland251@gmail.com',
+            to: customer.email,
+            subject: 'Password change request',
+            text: `Hi ${customer.name} \n 
+            Please click on the following link ${link} to reset your password. \n\n 
+            If you did not request this, please ignore this email and your password will remain unchanged.\n`
+          };
+
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+          });
+
+          res.status(200).json({ message: 'A reset email has been sent to ' + customer.email + '.' });
+        })
+        .catch(err => res.status(500).json({ message: err.message }));
     })
+    .catch(err => res.status(500).json({ message: err.message }));
+};
 
-} 
 
-//reset password
-/* exports.resetPassword = async (req, res) => {
-  try {
-    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
-    const CustomerId = decodedToken.CustomerId;
-    if (req.body.CustomerId && req.body.CustomerId !== CustomerId)
-      updatedCustomer = Customer.updateOne(
-        { _id: req.params.id },
-        {
-          $set: {
-            password: req.body.hashedPAssword,
+
+exports.reset = (req, res) => {
+  Customer.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } })
+    .then((customer) => {
+      if (!customer) return res.status(401).json({ message: 'Password reset token is invalid or has expired.' });
+
+      //Redirect user to form with the email address
+      //res.render('reset', {customer});
+    })
+    .catch(err => res.status(500).json({ message: err.message }));
+};
+
+
+exports.resetPassword = (req, res) => {
+  Customer.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } })
+    .then((customer) => {
+      if (!customer) return res.status(401).json({ message: 'Password reset token is invalid or has expired.' });
+
+      //Set the new password
+      customer.password = req.body.password;
+      customer.resetPasswordToken = undefined;
+      customer.resetPasswordExpires = undefined;
+
+      // Save
+      customer.save((err) => {
+        if (err) return res.status(500).json({ message: err.message });
+
+        // send email
+
+        var transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.MY_EMAIL,
+            pass: process.env.MY_PASS
           }
-        }
-      );
-    res.json(updatedCustomer);
-  } catch (err) {
-    res.status(400).json({ message: err.message })
-  }
+        });
 
-} */
+        var mailOptions = {
+          from: 'nftland251@gmail.com',
+          to: customer.email,
+          subject: "Your password has been changed",
+          text: `Hi ${customer.name} \n 
+                  This is a confirmation that the password for your account ${customer.email} has just been changed.\n`
+        };
+
+
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log('Email sent: ' + info.response);
+          }
+        });
+        next();
+      });
+    });
+};
+
+
+
+
+
+

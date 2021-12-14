@@ -28,7 +28,7 @@ exports.createAsset = async (req, res) => {
     bids: req.body.bids,
     instant_sale: req.body.instant_sale,
     price: req.body.price,
-    asset_picture: req.file.path
+    //asset_picture: req.file.path
 
   });
   asset.save()

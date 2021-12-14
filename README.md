@@ -1,10 +1,22 @@
 <h1 align="center"><project-name></h1>
 
 <p align="center"><project-description></p>
-
+ 
+  
 ## Links
 
 - [Backend for NFT marketplace](https://github.com/Mejdi97/Backend/<project-name> "<project-name>")
+  
+  ## Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file
+
+`DATABASE_URL`
+`URL`
+`SENDGRID_API_KEY`
+`FROM_EMAIL`
+  
+  
 
 ## Available Commands
 
@@ -31,7 +43,40 @@ For running the server and app together I am using concurrently this helps a lot
 
 For running the server file on you can use this command.
 
-### npm run serve
+## SWAGGER DOCUMENTATION
+  
+  ## Documentation
+
+[Documentation](https://swagger.io/docs/specification/basic-structure/)
+  
+  
+  Use [http://localhost:3001/api-docs/#/](http://localhost:3001/api-docs/#/) to use principle endpoints for this project.
+  
+## Exemple
+
+#### update a custumer
+
+```http
+  PUT /customers/${id}
+```
+
+| Parameter | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `jwt_tok` | `string` | **Required**. for put req  |
+
+#### Get asset
+
+```http
+  GET /assets/${id}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `id`      | `string` | **Required**. Id of item to fetch |
+
+
+
+
 
 ## Built With
 
