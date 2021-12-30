@@ -4,16 +4,11 @@ const mongoose = require('mongoose')
 
 const likeSchema = new mongoose.Schema({
 
-    asset_name :{
+    token_id :{
         type:String
     },
-    number_of_likes:{
-        type:Number
-        }
+    likers: [{ type: mongoose.Schema.ObjectId, ref: "Customer" }]
+
 })
-
-
-
-
 
 module.exports = mongoose.model('Like', likeSchema)

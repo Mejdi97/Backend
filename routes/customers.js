@@ -9,6 +9,7 @@ const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 
 
+
 /**
  * @swagger
  * definitions:
@@ -91,7 +92,7 @@ router.get('/:id', customerController.getOneCustomer);
  *         description: Successfully created
  */
 
-router.post('/', customerController.createCustomer);
+router.post('/', multer.fields([{ name: 'profile_picture', maxCount: 1 }, { name: 'couverture_picture', maxCount: 1 }]),customerController.createCustomer);
 
 //UPDATE
 /**
@@ -124,7 +125,7 @@ router.post('/', customerController.createCustomer);
  *         description: The customer was not found
  */
 
-router.put('/:id', multer.fields([{ name: 'profile_picture', maxCount: 1 }, { name: 'couverture_picture', maxCount: 1 }]), customerController.updateCustomer);
+ router.put('/:id', multer.fields([{ name: 'profile_picture', maxCount: 1 }, { name: 'couverture_picture', maxCount: 1 }]), customerController.updateCustomer);
 
 
 // Deleting One
@@ -202,8 +203,6 @@ router.post('/login', customerController.login);
 router.post('/recover', customerController.recover);
 
 
-
-
 router.get('/reset/:token', customerController.reset);
 // change the password 
 /**
@@ -227,10 +226,15 @@ router.get('/reset/:token', customerController.reset);
 
 router.post('/reset/:token', customerController.resetPassword);
 
-/*
-router.post('/forgot-password', customerController.forgotPassword);
+//follow 
 
-//reset password
-router.put('/password-reset/:id',auth,customerController.resetPassword);
-*/
+router.put('/:id/follow',customerController.makeFollow);
+
+router.get('/followers/:id',customerController.getFollowers)
+
+router.get('/following/:id',customerController.getFollowing)
+
+
+
+
 module.exports = router;

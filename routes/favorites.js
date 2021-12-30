@@ -56,6 +56,12 @@ router.get('/', favoriteController.getAllFavorite);
 
 router.get('/:id', favoriteController.getOneFavorite);
 
+//getting favorite by customerid
+
+//router.get('/id',favoriteController.getByCustomer);
+
+
+
 // Creating one
 /**
  * @swagger
@@ -79,6 +85,10 @@ router.get('/:id', favoriteController.getOneFavorite);
  */
 
 router.post('/', favoriteController.createFavorite);
+
+
+
+
 
 //DELLETING
 

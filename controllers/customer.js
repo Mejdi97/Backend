@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
+const customer = require('../models/Customer');
 
 
 
@@ -42,8 +43,10 @@ exports.createCustomer = async (req, res) => {
       url: req.body.url,
       bio: req.body.bio,
       email: req.body.email,
-      password: req.body.password,
-      social_media_accounts: req.body.social_media_accounts
+      //password: req.body.password,
+      social_media_accounts: req.body.social_media_accounts,
+      profile_picture: req.files['profile_picture'][0].path,
+      couverture_picture: req.files['couverture_picture'][0].path
 
     })
     const newCustomer = await customer.save();
@@ -53,8 +56,8 @@ exports.createCustomer = async (req, res) => {
   }
 }
 
-
 //update customer
+
 exports.updateCustomer = async (req, res) => {
   const customer = new Customer({
     _id: req.params.id,
@@ -140,7 +143,7 @@ exports.recover = (req, res) => {
       customer.save()
         .then(customer => {
           // send email
-          let link = "http://" + req.headers.host + "/customers/reset/" + customer.resetPasswordToken;
+          let link = customer.resetPasswordToken;
 
           var transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -155,7 +158,7 @@ exports.recover = (req, res) => {
             to: customer.email,
             subject: 'Password change request',
             text: `Hi ${customer.name} \n 
-            Please click on the following link ${link} to reset your password. \n\n 
+            Please copy the following code ${link[0] + link[1] + link[2] + link[3]} and paste it to reset your password. \n\n 
             If you did not request this, please ignore this email and your password will remain unchanged.\n`
           };
 
@@ -164,10 +167,11 @@ exports.recover = (req, res) => {
               console.log(error);
             } else {
               console.log('Email sent: ' + info.response);
+
             }
           });
 
-          res.status(200).json({ message: 'A reset email has been sent to ' + customer.email + '.' });
+          res.status(200).json({ Token: link });
         })
         .catch(err => res.status(500).json({ message: err.message }));
     })
@@ -201,38 +205,61 @@ exports.resetPassword = (req, res) => {
       // Save
       customer.save((err) => {
         if (err) return res.status(500).json({ message: err.message });
-
-        // send email
-
-        var transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: process.env.MY_EMAIL,
-            pass: process.env.MY_PASS
-          }
-        });
-
-        var mailOptions = {
-          from: 'nftland251@gmail.com',
-          to: customer.email,
-          subject: "Your password has been changed",
-          text: `Hi ${customer.name} \n 
-                  This is a confirmation that the password for your account ${customer.email} has just been changed.\n`
-        };
-
-
-        transporter.sendMail(mailOptions, function (error, info) {
-          if (error) {
-            console.log(error);
-          } else {
-            console.log('Email sent: ' + info.response);
-          }
-        });
-        next();
       });
     });
-};
+  res.json({ response: "ok" });
+}
 
 
+exports.makeFollow = async (req, res, next) => {
+  if (!req.body) {
+
+    return res.status(422).json({ message: 'Follow id is required' })
+  }
+
+  const checkAvailable = await customer.findOne({ _id: req.params.id }).exec()
+  if (!checkAvailable) {
+    return res.json({ message: 'Not found' })
+  }
 
 
+  let checkFollowingAvailable = await checkAvailable.following.find(id => id == req.body._id)
+  if (checkFollowingAvailable) {
+    return res.json({ message: 'Already following' })
+  }
+
+
+  const createFollowing = await Customer.findOneAndUpdate(
+    { _id: req.params.id },
+    { $push: { following: req.body._id } },
+    { new: true }
+  ).exec()
+
+  const createFollower = await Customer.findOneAndUpdate(
+    { _id: req.body._id },
+    { $push: { followers: req.params.id } },
+    { new: true }
+  ).exec()
+
+  if (createFollowing && createFollower) {
+    return res.status(201).json({ message: 'success' })
+  }
+}
+
+exports.getFollowers = async (req, res) => {
+
+  Customer.findById(mongoose.Types.ObjectId(req.params.id)
+    , (err, customer) => {
+      res.json(customer.followers);
+      return;
+    });
+}
+
+exports.getFollowing = async (req, res) => {
+
+  Customer.findById(mongoose.Types.ObjectId(req.params.id)
+    , (err, customer) => {
+      res.json(customer.following);
+      return;
+    });
+}

@@ -46,8 +46,8 @@ exports.getOneFavorite = (req, res) => {
   Favorite.findOne({
     _id: req.params.id
   }).then(
-    (thing) => {
-      res.status(200).json(thing);
+    (favorite) => {
+      res.status(200).json(favorite);
     }
   ).catch(
     (error) => {

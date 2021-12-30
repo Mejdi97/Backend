@@ -4,17 +4,17 @@ const mongoose = require('mongoose')
 
 const bidsSchema = new mongoose.Schema({
 
-    asset_id: {
+    token_id: {
         type: String
     },
-    entrance_date: {
+    entry_date: {
         type: Date,
         default: Date.now
     },
     closure_date: {
         type: Date
     },
-    entrance_price: {
+    entry_price: {
         type: Number
     },
     last_price: {

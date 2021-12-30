@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 
+
 const CustomerSchema = new mongoose.Schema({
 
   wallet_address: {
@@ -39,10 +40,13 @@ const CustomerSchema = new mongoose.Schema({
   resetPasswordExpires: {
     type: Date,
     required: false
-  }
+  },
+  followers: [{ type: mongoose.Schema.ObjectId, ref: "Customer" }],
+
+  following: [{ type: mongoose.Schema.ObjectId, ref: "Customer" }]
 
 }, { timestamps: true })
-/*
+
 CustomerSchema.pre('save', function (next) {
   const customer = this;
 
@@ -59,7 +63,7 @@ CustomerSchema.pre('save', function (next) {
     });
   });
 });
-*/
+
 
 CustomerSchema.methods.comparePassword = function (password) {
   return bcrypt.compareSync(password, this.password);
@@ -88,7 +92,6 @@ CustomerSchema.methods.generatePasswordReset = function () {
 };
 
 mongoose.set('useFindAndModify', false);
-
 
 
 
