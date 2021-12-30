@@ -43,7 +43,7 @@ const CustomerSchema = new mongoose.Schema({
   }
 
 }, { timestamps: true })
-/*
+
 CustomerSchema.pre('save', function (next) {
   const customer = this;
 
@@ -60,7 +60,7 @@ CustomerSchema.pre('save', function (next) {
     });
   });
 });
-*/
+
 
 CustomerSchema.methods.comparePassword = function (password) {
   return bcrypt.compareSync(password, this.password);
