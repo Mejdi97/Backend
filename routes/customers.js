@@ -29,6 +29,10 @@ const swaggerUi = require("swagger-ui-express");
  *         type: string
  *       social_media_accounts:
  *         type: array
+ *       followers:
+ *         type: array
+ *       followong:
+ *         type: array
  * 
  */
 
@@ -125,7 +129,9 @@ router.post('/', multer.fields([{ name: 'profile_picture', maxCount: 1 }, { name
  *         description: The customer was not found
  */
 
- router.put('/:id', multer.fields([{ name: 'profile_picture', maxCount: 1 }, { name: 'couverture_picture', maxCount: 1 }]), customerController.updateCustomer);
+
+ router.patch('/:id', multer.fields([{ name: 'profile_picture', maxCount: 1 }, { name: 'couverture_picture', maxCount: 1 }]), customerController.updateCustomer);
+router.put('/:id',customerController.updateWithId);
 
 
 // Deleting One

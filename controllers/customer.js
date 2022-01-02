@@ -33,9 +33,7 @@ exports.getOneCustomer = (req, res) => {
 
 //create custumorr
 exports.createCustomer = async (req, res) => {
-
   try {
-
     //const hashedPassword = await bcrypt.hash(req.body.password, 10)
     const customer = new Customer({
       wallet_address: req.body.wallet_address,
@@ -43,11 +41,11 @@ exports.createCustomer = async (req, res) => {
       url: req.body.url,
       bio: req.body.bio,
       email: req.body.email,
-      //password: req.body.password,
+      password: req.body.password,
       social_media_accounts: req.body.social_media_accounts,
-      profile_picture: req.files['profile_picture'][0].path,
-      couverture_picture: req.files['couverture_picture'][0].path
 
+      profile_picture: "http://localhost:3001/"+req.files['profile_picture'][0].path.slice(7),
+      couverture_picture: "http://localhost:3001/"+req.files['couverture_picture'][0].path.slice(7)
     })
     const newCustomer = await customer.save();
     res.status(201).json(newCustomer)
@@ -57,19 +55,11 @@ exports.createCustomer = async (req, res) => {
 }
 
 //update customer
-
 exports.updateCustomer = async (req, res) => {
   const customer = new Customer({
     _id: req.params.id,
-    wallet_address: req.body.wallet_address,
-    name: req.body.name,
-    url: req.body.url,
-    bio: req.body.bio,
-    email: req.body.email,
-    social_media_accounts: req.body.social_media_accounts,
-    profile_picture: req.files['profile_picture'][0].path,
-    couverture_picture: req.files['couverture_picture'][0].path
-
+    profile_picture: "http://localhost:3001/"+req.files['profile_picture'][0].path.slice(7),
+    couverture_picture: "http://localhost:3001/"+req.files['couverture_picture'][0].path.slice(7)
   });
 
   Customer.updateOne({ _id: req.params.id }, customer).then(
@@ -86,6 +76,35 @@ exports.updateCustomer = async (req, res) => {
     }
   );
 }
+
+
+exports.updateWithId = async (req, res) => {
+  const customer = new Customer({
+    _id: req.params.id,
+    wallet_address: req.body.wallet_address,
+    name: req.body.name,
+    url: req.body.url,
+    bio: req.body.bio,
+    email: req.body.email,
+    social_media_accounts: req.body.social_media_accounts,
+   
+  });
+  Customer.updateOne({ _id: req.params.id }, customer).then(
+    () => {
+      res.status(201).json({
+        message: 'Customer updated successfully!',
+        customer
+      });
+    }
+  ).catch(
+    (error) => {
+      res.status(400).json({
+        error: error
+      });
+    }
+  );
+}
+
 
 //delete customer
 exports.deleteCustomer = async (req, res) => {
