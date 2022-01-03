@@ -87,8 +87,10 @@ For running the server file on you can use this command.
 ```
 docker build --tag node-docker .
 ```
+❮img src="dockercapt%201.png" width="100" ❯
 
-```http
+```
  docker run node-docker
 ```
+❮img src="capture2.png" width="100" ❯
 
