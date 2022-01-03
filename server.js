@@ -233,7 +233,7 @@ app.post('/balance', (req, res) => {
   getMarketItem()
   const balance = getBalance(req.body.address)
   balance.then(function (balance) {
-      res.json({ balance })
+      res.json({ balance })    
   })
 
 })
