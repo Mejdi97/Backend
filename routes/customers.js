@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const customerController = require('../controllers/customer');
-const Customer = require('../models/Customer')
+const Customer = require('../models/customer')
 const mongoose = require('mongoose')
 const auth = require('../middleware/auth');
 const multer = require('../middleware/multer-config');
@@ -9,6 +9,27 @@ const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 
 
+/**
+ * @swagger
+ * definitions:
+ *   ForLogin:
+ *     properties:
+ *       email:
+ *         type: string
+ *       password:
+ *         type: string
+ */
+
+
+
+/**
+ * @swagger
+ * definitions:
+ *   recover:
+ *     properties:
+ *       email:
+ *         type: string
+ */
 
 /**
  * @swagger
@@ -106,30 +127,12 @@ router.post('/', multer.fields([{ name: 'profile_picture', maxCount: 1 }, { name
  *     tags:
  *       - customers
  *     description: update a customer
- *     produces:
- *       - application/json
- *     parameters:
- *       - name: customer
- *         description: customer object
- *         in: body
- *         required: true
- *         schema:
- *           $ref: '#/definitions/customers'
- *       - in: formData
- *         name: profile_picture
- *         type: file
- *         required: false
- *       - in: formData
- *         name: couverture_picture
- *         type: file
  *     responses:
  *       200:
  *         description: The customer description by id
  *       404:
  *         description: The customer was not found
  */
-
-
  router.patch('/:id', multer.fields([{ name: 'profile_picture', maxCount: 1 }, { name: 'couverture_picture', maxCount: 1 }]), customerController.updateCustomer);
 router.put('/:id',customerController.updateWithId);
 
@@ -166,17 +169,15 @@ router.delete('/:id', customerController.deleteCustomer);
  *   post:
  *     summary: use this route to login 
  *     tags: [Login]  
+ *     produces:
+ *       - application/json
  *     parameters:
- *       - in: path
- *         name: email
- *         schema:
- *           type: string
+ *       - name: customer
+ *         description: customer Credentials
+ *         in: body
  *         required: true
- *       - in: path
- *         name: password
  *         schema:
- *           type: string
- *         required: true
+ *           $ref: '#/definitions/ForLogin'
  *     responses:
  *       200:
  *         description: successfully login
@@ -194,12 +195,15 @@ router.post('/login', customerController.login);
  *   post:
  *     summary: use this route to have access to change password 
  *     tags: [Forget Password]  
+ *     produces:
+ *       - application/json
  *     parameters:
- *       - in: path
- *         name: email
- *         schema:
- *           type: string
+ *       - name: customer
+ *         description: customer Credentials
+ *         in: body
  *         required: true
+ *         schema:
+ *           $ref: '#/definitions/recover'
  *     responses:
  *       200:
  *         description: successfully sent !
@@ -210,6 +214,7 @@ router.post('/recover', customerController.recover);
 
 
 router.get('/reset/:token', customerController.reset);
+
 // change the password 
 /**
  * @swagger
@@ -219,10 +224,11 @@ router.get('/reset/:token', customerController.reset);
  *     tags: [Forget Password]  
  *     parameters:
  *       - in: path
- *         password: password
+ *         Token: token
  *         schema:
  *           type: string
  *         required: true
+ *         description: The token
  *     responses:
  *       200:
  *         description: password updated !

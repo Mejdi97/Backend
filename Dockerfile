@@ -1,9 +1,11 @@
 FROM node:12
 
-WORKDIR /usr/src/my_app
+WORKDIR /usr/my_app
 
 COPY . .
 
-EXPOSE 3001
+RUN npm i
 
-CMD [ "npm", "start" ]
+EXPOSE 3000
+
+CMD ["npm","start"]

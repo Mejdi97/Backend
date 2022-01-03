@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3005:3000"
+      - "3001:3000"
     depends_on:
       - database_service
 

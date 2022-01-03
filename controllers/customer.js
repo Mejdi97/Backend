@@ -1,10 +1,10 @@
-const Customer = require('../models/Customer');
+const Customer = require('../models/customer');
 var mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
-const customer = require('../models/Customer');
+const customer = require('../models/customer');
 
 
 

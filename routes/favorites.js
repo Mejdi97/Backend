@@ -65,7 +65,7 @@ router.get('/:id', favoriteController.getOneFavorite);
 // Creating one
 /**
  * @swagger
- * /customers:
+ * /favorites:
  *   post:
  *     tags:
  *       - favorites
